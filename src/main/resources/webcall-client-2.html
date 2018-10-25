@@ -1,0 +1,76 @@
+<html>
+<head>
+    <title>SocketIO TEST</title>
+    <meta content="dufengjia">
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<div class="audios"></div>
+<br/>
+<input type='button' value="link">
+<input type='button' value="join" disabled>
+<input type='button' value="call" disabled>
+<input type="button" value="hang" disabled><br/>
+
+<script src="socket.io.js"></script>
+<script src="adapter-latest.js"></script>
+<script src="RecordRTC.min.js"></script>
+<script src="webcall.js"></script>
+<script type="text/javascript">
+
+    var client = new WebCall();
+    client.players = document.querySelector('.audios');
+    client.addevent('call', function(data) {
+        if (client.user != data.user) {
+            client.pick(data.room);
+        }
+    });
+    client.addevent('talk', function () {
+        btn_link.disabled = true;
+        btn_join.disabled = true;
+        btn_call.disabled = true;
+        btn_hang.disabled = false;
+    })
+
+    var room = '888';
+    var user = '002';
+    var pass = '002';
+    var btn_link = document.querySelector('input[value=link]');
+    var btn_join = document.querySelector('input[value=join]');
+    var btn_call = document.querySelector('input[value=call]');
+    var btn_hang = document.querySelector('input[value=hang]');
+
+    btn_link.addEventListener('click', function() {
+        client.link('ws://127.0.0.1:8021', user, pass, function() {
+            btn_link.disabled = true;
+            btn_join.disabled = false;
+        });
+    });
+
+    btn_join.addEventListener('click', function() {
+        client.join(room, function() {
+            btn_join.disabled = true;
+            btn_call.disabled = false;
+        });
+    })
+
+    btn_call.addEventListener("click", function() {
+        client.call(room, function() {
+            btn_call.disabled = true;
+            btn_hang.disabled = false;
+        });
+    });
+
+    btn_hang.addEventListener("click",function() {
+        client.hang(room, function() {
+            btn_link.disabled = false;
+            btn_join.disabled = true;
+            btn_call.disabled = true;
+            btn_hang.disabled = true;
+        });
+    });
+
+</script>
+</body>
+</html>
